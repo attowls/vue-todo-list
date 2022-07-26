@@ -16,10 +16,10 @@ import TodoFooter from './components/TodoFooter.vue';
 
 export default {
   components: {
-    'TodoHeader' : TodoHeader,
-    'TodoInput' : TodoInput,
-    'TodoList' : TodoList,
-    'TodoFooter' : TodoFooter
+    TodoHeader,
+    TodoInput,
+    TodoList,
+    TodoFooter
   }
 }
 </script>
@@ -38,6 +38,9 @@ button {
 }
 .shadow {
   box-shadow: 5px 10px 10px rgba(0,0,0,0.03);
+}
+.pointer {
+  cursor:pointer;
 }
 </style>
 

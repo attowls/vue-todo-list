@@ -2,31 +2,55 @@
   <div class="inputBox shadow">
     <input type="text" v-model="newTodoItem" v-on:keyup.enter="addTodo" />
     <!-- <button v-on:click="addTodo">add</button> -->
-    <span class="addContainer" v-on:click="addTodo">
+    <span class="addContainer pointer" v-on:click="addTodo">
       <i class="far fa-solid fa-plus addBtn"></i>
     </span>
+    <Teleport to="body">
+      <!-- use the modal component, pass in the prop -->
+      <modal :show="showModal" @close="showModal = false">
+        <template #header>
+          <h3>경고!</h3>
+        </template>
+        <template #body>
+          <h4>값이 입력되지 않았습니다.</h4>
+        </template>
+        <template #footer>
+          <!-- <button @click="showModal = false">닫기</button> -->
+          <div class="closeModalContainer pointer">
+            <span class="closeModalButton" @click="showModal = false">닫기</span>
+          </div>
+        </template>
+      </modal>
+    </Teleport>
   </div>
 </template>
 
 <script>
+import Modal from "./common/AlertModal.vue";
 export default {
-  data: function () {
+  data () {
     return {
       newTodoItem: "",
+      showModal: false,
     };
   },
   methods: {
-    addTodo: function () {
-      var blank_pattern = /^\s+|\s+$/g;
+    addTodo() {
+      const blank_pattern = /^\s+|\s+$/g;
       if (this.newTodoItem.replace(blank_pattern, "") != "") {
-        var newObj = {completed: false, item: this.newTodoItem}
-        localStorage.setItem(this.newTodoItem, JSON.stringify(newObj));
+        const text = this.newTodoItem.trim();
+        this.$store.commit('addOneItem', text);
         this.clearInput();
+      } else {
+        this.showModal = !this.showModal;
       }
     },
-    clearInput: function () {
+    clearInput () {
       this.newTodoItem = "";
     },
+  },
+  components: {
+    Modal,
   },
 };
 </script>
@@ -59,4 +83,17 @@ input:focus {
   width: 50px;
   vertical-align: middle;
 }
+.closeModalContainer {
+  width: 5rem;
+  height: 2rem;
+  line-height: 2rem;
+  background-color: rgb(194, 194, 194);
+  border-radius: 3px;
+  margin: 0 auto;
+}
+.closeModalButton {
+  color: #000000;
+  display:block;
+}
+
 </style>

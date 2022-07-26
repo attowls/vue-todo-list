@@ -1,48 +1,39 @@
 <template>
   <div>
-    <ul>
-      <li v-for=" todoItem, index in todoItems" v-bind:key="todoItem.item" class="shadow">
+    <transition-group name="list" tag="ul">
+      <li v-for=" todoItem, index in this.storedTodoItems" v-bind:key="todoItem.item" class="shadow">
         <span v-bind:class="todoItem.completed ? 'checkBtnCompleted':'checkBtn'" 
-              v-on:click="toggleComplete(todoItem, index)">
-          <i class="far fa-solid fa-check"></i>
+              v-on:click="toggleComplete({todoItem, index})">
+          <i class="far fa-solid fa-check pointer"></i>
         </span>
         <span v-bind:class="{textCompleted: todoItem.completed}"> {{ todoItem.item }} </span>
-        <span class="removeBtn" v-on:click="removeTodo(todoItem, index)">
+        <span class="removeBtn pointer" v-on:click="removeTodo({todoItem, index})">
           <i class="far fa-solid fa-trash"></i>
         </span>
       </li>
-    </ul>
+    </transition-group>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+import { mapMutations } from 'vuex';
+
 export default {
-  data: function() {
-    return {
-      todoItems: [],
-    }
-  },
-  created: function() { //인스턴스가 생성되자마자 실행되는 life cycle
-    if(localStorage.length > 0) {
-      for (var i = 0; i< localStorage.length; i++) {
-        // console.log(localStorage.key(i));
-        this.todoItems.push(JSON.parse(localStorage.getItem(localStorage.key(i))));
-      }
-    }
+  computed: {
+    ...mapGetters(['storedTodoItems']),
   },
   methods: {
-    removeTodo: function(todoItem, index) {
-      console.log(todoItem, index);
-      localStorage.removeItem(todoItem.item);
-      this.todoItems.splice(index, 1);
-    },
-    toggleComplete: function(todoItem, index) {
-      console.log(todoItem, index);
-      todoItem.completed = !todoItem.completed;
-      //로컬 스토리지의 데이터 갱신
-      localStorage.removeItem(todoItem.item);
-      localStorage.setItem(todoItem.item, JSON.stringify(todoItem));
-    }
+    ...mapMutations({
+      removeTodo : 'removeOneItem',
+      toggleComplete : 'toggleOneItem',
+    })
+    // removeTodo(todoItem, index) {
+    //   this.$store.commit('removeOneItem', {todoItem, index});
+    // },
+    // toggleComplete(todoItem, index) {
+    //   this.$store.commit('toggleOneItem', {todoItem, index});
+    // }
   }
 }
 </script>
@@ -79,5 +70,16 @@ li {
 .removeBtn {
   margin-left: auto;
   color: #000000;
+}
+
+/* 리스트 아이템 트렌지션 효과 */
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.5s ease;
+}
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
 }
 </style>
